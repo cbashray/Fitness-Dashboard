@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sagar's Fitness Profile Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(45deg, #ff6b6b, #ffa726);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .tab-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-button:hover {
+            background: #e9ecef;
+        }
+
+        .tab-button.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .diet-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .diet-table th,
+        .diet-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .diet-table th {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            font-weight: 600;
+        }
+
+        .diet-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .day-column {
+            font-weight: bold;
+            background: #e8f5e8;
+            width: 80px;
+        }
+
+        .workout-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .workout-card {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .workout-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .workout-day {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .workout-focus {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .tip-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #007bff;
+        }
+
+        .tip-title {
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .progress-tracker {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            transition: width 0.5s ease;
+        }
+
+        .bmi-calculator {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .calculate-btn {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .bmi-result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .meal-timer {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .timer-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+            margin: 20px 0;
+        }
+
+        .timer-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .timer-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .timer-btn.start {
+            background: #28a745;
+            color: white;
+        }
+
+        .timer-btn.stop {
+            background: #dc3545;
+            color: white;
+        }
+
+        .timer-btn.reset {
+            background: #6c757d;
+            color: white;
+        }
+
+        .meal-preset {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .tab-buttons {
+                flex-direction: column;
+            }
+            
+            .diet-table {
+                font-size: 0.8rem;
+            }
+            
+            .diet-table th,
+            .diet-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏋️‍♂️ Sagar's Fitness Profile Dashboard</h1>
+            <div class="profile-stats">
+                <div class="stat-card">
+                    <span class="stat-value">160</span>
+                    <span class="stat-label">Height (cm)</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">60</span>
+                    <span class="stat-label">Weight (kg)</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">6</span>
+                    <span class="stat-label">Workout Days</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="currentBMI">23.4</span>
+                    <span class="stat-label">BMI</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="openTab(event, 'diet-plan')">📅 Diet Plan</button>
+                <button class="tab-button" onclick="openTab(event, 'workout-schedule')">💪 Workout Schedule</button>
+                <button class="tab-button" onclick="openTab(event, 'nutrition-tips')">🥗 Nutrition Tips</button>
+                <button class="tab-button" onclick="openTab(event, 'progress-tracker')">📊 Progress Tracker</button>
+                <button class="tab-button" onclick="openTab(event, 'tools')">🛠️ Fitness Tools</button>
+            </div>
+
+            <div id="diet-plan" class="tab-content active">
+                <h2>📅 Weekly Diet Plan</h2>
+                <p>Your personalized 7-day rotating diet plan designed for optimal performance, satiety, and lean muscle support. This plan balances vegetarian and non-vegetarian options to meet your fitness goals.</p>
+                
+                <table class="diet-table">
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>Pre-Workout (6:30 AM)</th>
+                            <th>Post-Workout (8:30 AM)</th>
+                            <th>Lunch (1:00 PM)</th>
+                            <th>Evening Snack (4:30 PM)</th>
+                            <th>Dinner (8:00 PM)</th>
+                            <th>Late Snack (9:30 PM)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="day-column">Mon</td>
+                            <td>Black coffee + banana</td>
+                            <td>4 egg whites + 1 toast + fruit</td>
+                            <td>Grilled chicken + rice + salad</td>
+                            <td>Coffee + roasted makhana</td>
+                            <td>Palak paneer + 2 rotis + curd</td>
+                            <td>Low-fat milk</td>
+                        </tr>
+                        <tr>
+                            <td class="day-column">Tue</td>
+                            <td>Black coffee + 2 dates</td>
+                            <td>Sprouts chaat + 1 bread + fruit</td>
+                            <td>Chole + jeera rice + salad</td>
+                            <td>Coffee + sweet potato</td>
+                            <td>Chicken curry + sautéed veggies</td>
+                            <td>Haldi milk + 2 almonds</td>
+                        </tr>
+                        <tr>
+                            <td class="day-column">Wed</td>
+                            <td>Black coffee + banana</td>
+                            <td>Boiled eggs + toast + watermelon</td>
+                            <td>Paneer bhurji + 2 rotis + dal</td>
+                            <td>Coffee + roasted chana</td>
+                            <td>Mixed veg curry + rice</td>
+                            <td>Milk + flaxseed</td>
+                        </tr>
+                        <tr>
+                            <td class="day-column">Thu</td>
+                            <td>Coffee + peanut butter toast</td>
+                            <td>Whey protein + fruit</td>
+                            <td>Chicken + brown rice + dal</td>
+                            <td>Coffee + nuts + 1 fruit</td>
+                            <td>Vegetable stir-fry + roti</td>
+                            <td>Buttermilk</td>
+                        </tr>
+                        <tr>
+                            <td class="day-column">Fri</td>
+                            <td>Black coffee + banana</td>
+                            <td>Sprouts + oats porridge</td>
+                            <td>Moong dal khichdi + curd + salad</td>
+                            <td>Milk coffee + makhana</td>
+                            <td>Grilled chicken + veggies + roti</td>
+                            <td>Turmeric milk</td>
+                        </tr>
+                        <tr>
+                            <td class="day-column">Sat</td>
+                            <td>Coffee + 2 dates</td>
+                            <td>Whey + banana</td>
+                            <td>Chickpea curry + rice + beet salad</td>
+                            <td>Coffee + dark chocolate + chana</td>
+                            <td>Paneer tikka + 2 rotis + veggie sauté</td>
+                            <td>Milk</td>
+                        </tr>
+                        <tr>
+                            <td class="day-column">Sun</td>
+                            <td>Milk coffee + 1 fruit</td>
+                            <td>Veg poha + boiled egg</td>
+                            <td>Veg biryani + curd + cucumber</td>
+                            <td>Tea + peanut chikki</td>
+                            <td>Mix veg curry + brown rice</td>
+                            <td>Curd or light warm milk</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="workout-schedule" class="tab-content">
+                <h2>💪 6-Day Workout Schedule</h2>
+                <p>Your comprehensive workout split designed to target all major muscle groups while allowing adequate recovery time. Each session is strategically planned to maximize muscle growth and strength development.</p>
+                
+                <div class="workout-grid">
+                    <div class="workout-card">
+                        <div class="workout-day">Monday</div>
+                        <div class="workout-focus">Chest + Triceps</div>
+                        <p>Focus on compound movements like bench press, push-ups, and tricep dips for maximum muscle activation.</p>
+                    </div>
+                    <div class="workout-card">
+                        <div class="workout-day">Tuesday</div>
+                        <div class="workout-focus">Back + Biceps</div>
+                        <p>Pull-ups, rows, and bicep curls to build a strong posterior chain and arm definition.</p>
+                    </div>
+                    <div class="workout-card">
+                        <div class="workout-day">Wednesday</div>
+                        <div class="workout-focus">Legs</div>
+                        <p>Squats, lunges, and calf raises for lower body strength and power development.</p>
+                    </div>
+                    <div class="workout-card">
+                        <div class="workout-day">Thursday</div>
+                        <div class="workout-focus">Shoulders + Abs</div>
+                        <p>Overhead presses, lateral raises, and core strengthening exercises for stability.</p>
+                    </div>
+                    <div class="workout-card">
+                        <div class="workout-day">Friday</div>
+                        <div class="workout-focus">Push/Pull Hybrid</div>
+                        <p>Combination workout targeting multiple muscle groups for functional strength.</p>
+                    </div>
+                    <div class="workout-card">
+                        <div class="workout-day">Saturday</div>
+                        <div class="workout-focus">Core + HIIT / Functional</div>
+                        <p>High-intensity interval training and functional movements for cardiovascular health.</p>
+                    </div>
+                </div>
+                
+                <div class="workout-card" style="background: linear-gradient(45deg, #28a745, #20c997); margin: 20px 0;">
+                    <div class="workout-day">Sunday</div>
+                    <div class="workout-focus">Rest / Recovery</div>
+                    <p>Active recovery day with light stretching, yoga, or leisurely walks to promote muscle recovery.</p>
+                </div>
+            </div>
+
+            <div id="nutrition-tips" class="tab-content">
+                <h2>🥗 Nutrition Guidelines & Tips</h2>
+                <p>Essential nutrition principles to support your fitness goals, including protein sources, healthy fats, and optimal meal timing strategies.</p>
+                
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <div class="tip-title">🌱 Vegetarian Proteins</div>
+                        <p>Paneer, tofu, sprouts, dals, chickpeas, and moong dal provide complete amino acid profiles for muscle building and recovery.</p>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-title">🍗 Non-Vegetarian Proteins</div>
+                        <p>Eggs, chicken breast (max 150g/day), and fish offer high-quality protein with excellent bioavailability for muscle synthesis.</p>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-title">🥜 Healthy Fats</div>
+                        <p>Almonds, ghee (1 tsp), peanut butter, and seeds provide essential fatty acids for hormone production and nutrient absorption.</p>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-title">🍿 Smart Snacks</div>
+                        <p>Roasted chana, makhana, boiled eggs, nuts, sweet potato, and coffee provide sustained energy between meals.</p>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-title">⏰ Meal Timing</div>
+                        <p>Pre-workout nutrition 30-60 minutes before exercise, post-workout within 30 minutes for optimal recovery and muscle growth.</p>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-title">💧 Hydration</div>
+                        <p>Aim for 8-10 glasses of water daily, increased during workout days. Include coconut water and herbal teas for variety.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="progress-tracker" class="tab-content">
+                <h2>📊 Progress Tracking Dashboard</h2>
+                <p>Monitor your fitness journey with these key performance indicators. Regular tracking helps maintain motivation and identify areas for improvement.</p>
+                
+                <div class="progress-tracker">
+                    <h3>Weekly Goals Progress</h3>
+                    <div class="progress-item">
+                        <span>Workout Sessions Completed</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 83%"></div>
+                        </div>
+                        <span>5/6</span>
+                    </div>
+                    <div class="progress-item">
+                        <span>Diet Plan Adherence</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 90%"></div>
+                        </div>
+                        <span>90%</span>
+                    </div>
+                    <div class="progress-item">
+                        <span>Water Intake Goal</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                        <span>7.5/10 glasses</span>
+                    </div>
+                    <div class="progress-item">
+                        <span>Sleep Quality</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                        <span>7/8 hours</span>
+                    </div>
+                </div>
+
+                <div class="meal-timer">
+                    <h3>⏰ Meal Reminder Timer</h3>
+                    <div class="timer-display" id="timerDisplay">00:00:00</div>
+                    <div class="timer-buttons">
+                        <button class="timer-btn meal-preset" onclick="setMealTimer(30)">Pre-Workout (30m)</button>
+                        <button class="timer-btn meal-preset" onclick="setMealTimer(120)">Post-Workout (2h)</button>
+                        <button class="timer-btn meal-preset" onclick="setMealTimer(270)">Lunch (4.5h)</button>
+                        <button class="timer-btn meal-preset" onclick="setMealTimer(210)">Snack (3.5h)</button>
+                        <button class="timer-btn start" onclick="startTimer()">Start</button>
+                        <button class="timer-btn stop" onclick="stopTimer()">Stop</button>
+                        <button class="timer-btn reset" onclick="resetTimer()">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tools" class="tab-content">
+                <h2>🛠️ Fitness Calculation Tools</h2>
+                <p>Utilize these interactive tools to monitor your health metrics and make informed decisions about your fitness journey.</p>
+                
+                <div class="bmi-calculator">
+                    <h3>BMI Calculator</h3>
+                    <div class="input-group">
+                        <label for="height">Height (cm):</label>
+                        <input type="number" id="height" value="160" min="100" max="250">
+                    </div>
+                    <div class="input-group">
+                        <label for="weight">Weight (kg):</label>
+                        <input type="number" id="weight" value="60" min="30" max="200" step="0.1">
+                    </div>
+                    <button class="calculate-btn" onclick="calculateBMI()">Calculate BMI</button>
+                    <div id="bmiResult" class="bmi-result"></div>
+                </div>
+
+                <div class="progress-tracker">
+                    <h3>Body Measurements Tracker</h3>
+                    <div class="input-group">
+                        <label for="chest">Chest (cm):</label>
+                        <input type="number" id="chest" placeholder="Enter chest measurement">
+                    </div>
+                    <div class="input-group">
+                        <label for="waist">Waist (cm):</label>
+                        <input type="number" id="waist" placeholder="Enter waist measurement">
+                    </div>
+                    <div class="input-group">
+                        <label for="biceps">Biceps (cm):</label>
+                        <input type="number" id="biceps" placeholder="Enter biceps measurement">
+                    </div>
+                    <button class="calculate-btn" onclick="saveMeasurements()">Save Measurements</button>
+                </div>
+
+                <div class="progress-tracker">
+                    <h3>Daily Calorie Estimator</h3>
+                    <p>Based on your profile (160cm, 60kg, 6-day workout schedule):</p>
+                    <div class="progress-item">
+                        <span>Basal Metabolic Rate (BMR)</span>
+                        <span><strong>1,456 calories/day</strong></span>
+                    </div>
+                    <div class="progress-item">
+                        <span>Total Daily Energy Expenditure (TDEE)</span>
+                        <span><strong>2,267 calories/day</strong></span>
+                    </div>
+                    <div class="progress-item">
+                        <span>Recommended Intake (Lean Muscle Gain)</span>
+                        <span><strong>2,400-2,500 calories/day</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // BMI Calculator
+        function calculateBMI() {
+            const height = parseFloat(document.getElementById('height').value) / 100; // Convert to meters
+            const weight = parseFloat(document.getElementById('weight').value);
+            
+            if (height > 0 && weight > 0) {
+                const bmi = weight / (height * height);
+                const bmiRounded = Math.round(bmi * 10) / 10;
+                
+                let category = '';
+                let color = '';
+                
+                if (bmi < 18.5) {
+                    category = 'Underweight';
+                    color = '#ffc107';
+                } else if (bmi < 25) {
+                    category = 'Normal weight';
+                    color = '#28a745';
+                } else if (bmi < 30) {
+                    category = 'Overweight';
+                    color = '#fd7e14';
+                } else {
+                    category = 'Obese';
+                    color = '#dc3545';
+                }
+                
+                document.getElementById('bmiResult').innerHTML = `
+                    <div style="background: ${color}; color: white; padding: 15px; border-radius: 8px;">
+                        Your BMI: ${bmiRounded}<br>
+                        Category: ${category}
+                    </div>
+                `;
+                
+                // Update header BMI
+                document.getElementById('currentBMI').textContent = bmiRounded;
+            }
+        }
+
+        // Timer functionality
+        let timerInterval;
+        let timerSeconds = 0;
+        let isTimerRunning = false;
+
+        function updateTimerDisplay() {
+            const hours = Math.floor(timerSeconds / 3600);
+            const minutes = Math.floor((timerSeconds % 3600) / 60);
+            const seconds = timerSeconds % 60;
+            
+            document.getElementById('timerDisplay').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function setMealTimer(minutes) {
+            timerSeconds = minutes * 60;
+            updateTimerDisplay();
+        }
+
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                timerInterval = setInterval(() => {
+                    if (timerSeconds > 0) {
+                        timerSeconds--;
+                        updateTimerDisplay();
+                    } else {
+                        stopTimer();
+                        alert('⏰ Meal time reminder!');
+                    }
+                }, 1000);
+            }
+        }
+
+        function stopTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            stopTimer();
+            timerSeconds = 0;
+            updateTimerDisplay();
+        }
+
+        // Save measurements function
+        function saveMeasurements() {
+            const chest = document.getElementById('chest').value;
+            const waist = document.getElementById('waist').value;
+            const biceps = document.getElementById('biceps').value;
+            
+            if (chest || waist || biceps) {
+                alert('Measurements saved successfully! 📊');
+                // In a real app, this would save to a database
+            } else {
+                alert('Please enter at least one measurement.');
+            }
+        }
+
+        // Initialize BMI on page load
+        window.onload = function() {
+            calculateBMI();
+        };
+
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.workout-card, .tip-card, .stat-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeIn 0.6s ease forwards';
+                    }
+                });
+            });
+            
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html
